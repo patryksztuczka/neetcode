@@ -1,64 +1,97 @@
-// https://leetcode.com/problems/contains-duplicate/description/
+// https://leetcode.com/problems/valid-anagram/description/
 
 // Problem:
-// Given an integer array nums, return true if any value 
-// appears at least twice in the array, and return false 
-// if every element is distinct.
+// Given two strings s and t, return true if t is an anagram of s, 
+// and false otherwise.
+
+// An Anagram is a word or phrase formed by 
+// rearranging the letters of a different word or 
+// phrase, typically using all the original letters exactly once.
+
+use std::collections::HashMap;
 
 fn main() {}
 
-fn contains_duplicate(nums: Vec<i8>) -> bool {
-    let mut contains_duplicate = false;
+// Time complexity: O(n) where n = s.len() + t.len()
+// Space complexity: O(n) where n = s.len() + t.len()
+fn is_anagram(s: &str, t: &str) -> bool {
+    if s.len() != t.len() {
+        return false;
+    }
 
-    for x in 0..nums.len() {
-        for y in 0..nums.len() {
-            if x != y && nums[x] == nums[y] {
-                contains_duplicate = true;
+    let mut s_hashmap: HashMap<char, u8> = HashMap::new();
+    let mut t_hashmap: HashMap<char, u8> = HashMap::new();
+
+    for c in s.chars() {
+        *s_hashmap.entry(c).or_insert(0) += 1;
+    }
+
+    for c in t.chars() {
+        *t_hashmap.entry(c).or_insert(0) += 1;
+    }
+
+    for (key, value) in s_hashmap.into_iter() {
+        if t_hashmap.contains_key(&key) {
+            if t_hashmap.get(&key).unwrap() != &value {
+                return false;
             }
+        } else {
+            return false;
         }
     }
 
-    contains_duplicate
+    true
 }
 
-fn better_contains_duplicate(mut nums: Vec<i8>) -> bool {
-    let mut contains_duplicate = false;
-
-    nums.sort();
-
-    for x in 0..nums.len() {
-        if x + 1 < nums.len() && nums[x] == nums[x + 1] {
-            contains_duplicate = true;
-        }
+// Time complexity: O(nlogn) where n = s.len() + t.len()
+// Space complexity: O(n) where n = s.len() + t.len()
+fn another_is_anagram(s: &str, t: &str) -> bool {
+    if s.len() != t.len() {
+        return false;
     }
 
-    contains_duplicate
+    let mut s_arr: Vec<char> = s.chars().collect();
+    let mut t_arr: Vec<char> = t.chars().collect();
+
+    s_arr.sort();
+    t_arr.sort();
+
+    let s_sorted: String = s_arr.into_iter().collect();
+    let t_sorted: String = t_arr.into_iter().collect();
+
+    if s_sorted != t_sorted {
+        return false;
+    }
+
+    true
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::contains_duplicate;
-    use crate::better_contains_duplicate;
+    use crate::is_anagram;
+    use crate::another_is_anagram;
 
     #[test]
-    fn test_contains_duplicate() {
-        let nums1 = vec![1,2,3,1];
-        let nums2 = vec![1,2,3,4];
-        let nums3 = vec![1,1,1,3,3,4,3,2,4,2];
+    fn test_is_anagram() {
+        let s1 = "anagram";
+        let t1 = "nagaram";
 
-         assert_eq!(contains_duplicate(nums1), true);
-         assert_eq!(contains_duplicate(nums2), false);
-         assert_eq!(contains_duplicate(nums3), true);
+        let s2 = "rat";
+        let t2 = "cat";
+
+         assert_eq!(is_anagram(s1, t1), true);
+         assert_eq!(is_anagram(s2, t2), false);
     }
 
     #[test]
-    fn test_better_contains_duplicate() {
-        let nums1 = vec![1,2,3,1];
-        let nums2 = vec![1,2,3,4];
-        let nums3 = vec![1,1,1,3,3,4,3,2,4,2];
+    fn test_other_is_anagram() {
+        let s1 = "anagram";
+        let t1 = "nagaram";
 
-        assert_eq!(better_contains_duplicate(nums1), true);
-        assert_eq!(better_contains_duplicate(nums2), false);
-        assert_eq!(better_contains_duplicate(nums3), true);
+        let s2 = "rat";
+        let t2 = "cat";
+
+         assert_eq!(another_is_anagram(s1, t1), true);
+         assert_eq!(another_is_anagram(s2, t2), false);
     }
 }
